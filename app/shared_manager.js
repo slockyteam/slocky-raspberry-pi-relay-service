@@ -138,5 +138,7 @@ module.exports.writeServiceSettings = function(data) {
 		deviceSettings.services = services;
 		
 		module.exports.writeDeviceSettings(deviceSettings);
+		
+		module.exports.readServiceSettings();
 	}
 };

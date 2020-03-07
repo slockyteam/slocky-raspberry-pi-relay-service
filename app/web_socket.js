@@ -164,6 +164,8 @@ module.exports.connect = function() {
 									json.data =  null;
 								
 									module.exports.webSocketSend(json);
+									
+									Relays.init();
 								}
 							});
 							break;
