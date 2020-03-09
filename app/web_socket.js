@@ -223,6 +223,7 @@ module.exports.connect = function() {
 									const currentObject = Relays.relaysCurrentStates()[relayNumber];
 			
 									json.results = {
+										type: currentObject.type,
 										relay_number: relayNumber,
 										mode: currentObject.mode,
 										trigger_time: currentObject.trigger_time,

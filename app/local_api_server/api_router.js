@@ -57,6 +57,7 @@ router.put('/relay_on', function(req, res) {
 			const currentObject = Relays.relaysCurrentStates()[relayNumber];
 			
 			res.status(200).send({
+				type: currentObject.type,
 				relay_number: relayNumber,
 				mode: currentObject.mode,
 				trigger_time: currentObject.trigger_time,
@@ -100,6 +101,7 @@ router.put('/relay_off', function(req, res) {
 			const currentObject = Relays.relaysCurrentStates()[relayNumber];
 			
 			res.status(200).send({
+				type: currentObject.type,
 				relay_number: relayNumber,
 				mode: currentObject.mode,
 				trigger_time: currentObject.trigger_time,

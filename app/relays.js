@@ -150,6 +150,7 @@ module.exports.relaysCurrentStates = function() {
 	
 	SharedManager.service.settings.relays.forEach(function(relaySettings, index) {
 		array[index] = {
+			type: relaySettings.type,
 			mode: relaySettings.mode,
 			trigger_time: relaySettings.trigger_time,
 			state: relaysStates[index]
