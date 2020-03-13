@@ -32,6 +32,7 @@ router.get('/service_info', function(req, res) {
 	  	device_identifier: SharedManager.deviceSettings.device_identifier,
 	  	service_version: SharedManager.serviceSettings.service_version,
 	  	manufacturer: SharedManager.service.manufacturer,
+	  	local_api_server_port: SharedManager.service.local_api_server_port,
 	  	data: {
 		  	relays: Relays.relaysCurrentStates()
 	  	}
