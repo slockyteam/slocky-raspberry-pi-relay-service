@@ -119,6 +119,7 @@ module.exports.writeServiceSettings = function(data) {
 		
 	var newService = module.exports.service;
 	newService.settings = merge(module.exports.service.settings, data);
+	module.exports.service = newService;
 	
 	var services = deviceSettings.services;
 	var index = null;

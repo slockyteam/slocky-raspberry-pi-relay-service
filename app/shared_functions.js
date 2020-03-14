@@ -9,7 +9,7 @@ const Relays = require('./relays.js');
  * Methods
  */
 
-module.exports.loadServiceSettings = function(data, callback) {
+module.exports.loadServiceSettings = function(callback) {
 	var serviceSettings = SharedManager.service.settings;
 	
 	callback(null, serviceSettings);
