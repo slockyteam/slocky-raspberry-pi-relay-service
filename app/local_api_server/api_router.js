@@ -133,6 +133,30 @@ router.put('/relay_off', function(req, res) {
 	});
 });
 
+router.get('/service_settings', function(req, res) {
+	SharedFunctions.loadServiceSettings(function(error, results) {
+		if (error) {
+			return res.status(500).send({
+				error: error
+			});
+		} else {
+			return res.status(200).send(results);
+		}
+	});
+});
+
+router.post('/service_settings', function(req, res) {
+	SharedFunctions.saveServiceSettings(req.body, function(error) {
+		if (error) {
+			return res.status(500).send({
+				error: error
+			});
+		} else {
+			return res.status(200).send();
+		}
+	});
+});
+
 /**
  * Module exports
  */

@@ -166,14 +166,24 @@ module.exports.connect = function() {
 									module.exports.webSocketSend(json);
 									
 									Relays.init();
+									
+									module.exports.sendUpdateData();
 								}
 							});
 							break;
 						}
 						case 'load_service_settings': {
-							json.results = SharedManager.service.settings;
-							
-							module.exports.webSocketSend(json);
+							SharedFunctions.loadServiceSettings(function(error, results) {
+								if (error) {
+									json.error = error;
+								
+									module.exports.webSocketSend(json);
+								} else {
+									json.results =  results;
+								
+									module.exports.webSocketSend(json);
+								}
+							});
 							break;
 						}
 						case 'relay_on': {
