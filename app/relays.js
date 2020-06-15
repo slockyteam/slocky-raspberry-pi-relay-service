@@ -15,134 +15,72 @@ var relaysStates;
 
 module.exports.init = function() {
 	relaysStates = new Array(SharedManager.service.settings.relays.length);
-	raspberryGpioOutputArray = new Array(SharedManager.service.settings.relays.length);
-	raspberryGpioFeedbackArray = new Array(SharedManager.service.settings.relays.length);
-
-	if (SharedManager.deviceSettings.hardware.includes('Raspberry') == true) {
-		SharedManager.service.settings.relays.forEach(function(relaySettings, index) {
-			exec('echo "' + String(relaySettings.relay_gpio_pin) + '" > /sys/class/gpio/export', (error, stdout, stderr) => {
-			});
-			
-			switch (relaySettings.mode) {
-				case 'on_and_off':
-					module.exports.setRelay(index, relaySettings.default_state);
-				break;
-				case 'trigger_on':
-					module.exports.setRelay(index, false);
-				break;
-				case 'trigger_off':
-					module.exports.setRelay(index, true);
-				break;
-				default:
-				break;
-			}
-			
-			if (relaySettings.feedback_enable == true) {
-				exec('echo "' + String(relaySettings.feedback_gpio_pin) + '" > /sys/class/gpio/export', (error, stdout, stderr) => {
-				});
-				exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.feedback_gpio_pin) + '/direction', (error, stdout, stderr) => {
-				});
-			}
+	
+	SharedManager.service.settings.relays.forEach(function(relaySettings, index) {
+		exec('echo "' + String(relaySettings.relay_gpio_pin) + '" > /sys/class/gpio/export', (error, stdout, stderr) => {
 		});
 		
-		return true;
-	} else if (SharedManager.deviceSettings.hardware.includes('Omega') == true) {
-		SharedManager.service.settings.relays.forEach(function(relaySettings, index) {
-			exec('fast-gpio set-output ' + relaySettings.relay_gpio_pin, (error, stdout, stderr) => {
-			});
-			
-			switch (relaySettings.mode) {
-				case 'on_and_off':
-					module.exports.setRelay(index, relaySettings.default_state);
-				break;
-				case 'trigger_on':
-					module.exports.setRelay(index, false);
-				break;
-				case 'trigger_off':
-					module.exports.setRelay(index, true);
-				break;
-				default:
-				break;
-			}
-			
-			if (relaySettings.feedback_enable == true) {
-				exec('fast-gpio set-input ' + relaySettings.feedback_gpio_pin, (error, stdout, stderr) => {
-				});
-			}
-		});
+		switch (relaySettings.mode) {
+			case 'on_and_off':
+				module.exports.setRelay(index, relaySettings.default_state);
+			break;
+			case 'trigger_on':
+				module.exports.setRelay(index, false);
+			break;
+			case 'trigger_off':
+				module.exports.setRelay(index, true);
+			break;
+			default:
+			break;
+		}
 		
-		return true;
-	} else {
-		return false;
-	}
+		if (relaySettings.feedback_enable == true) {
+			exec('echo "' + String(relaySettings.feedback_gpio_pin) + '" > /sys/class/gpio/export', (error, stdout, stderr) => {
+			});
+			exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.feedback_gpio_pin) + '/direction', (error, stdout, stderr) => {
+			});
+		}
+	});
 };
 
 module.exports.setRelay = function(relayNumber, state) {
 	const relaySettings = SharedManager.service.settings.relays[relayNumber];
 	
-	if (SharedManager.deviceSettings.hardware.includes('Raspberry') == true) {
-		
-		if (state == true) {
-			if (relaySettings.gpio_true_value == false) {
-				exec('echo "out" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
-				});
-				exec('echo "0" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/value', (error, stdout, stderr) => {
-				});
-			} else {
-				exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
-				});
-			}
+	if (state == true) {
+		if (relaySettings.gpio_true_value == false) {
+			exec('echo "out" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
+			});
+			exec('echo "0" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/value', (error, stdout, stderr) => {
+			});
 		} else {
-			if (relaySettings.gpio_false_value == true) {
-				exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
-				});
-			} else {
-				exec('echo "out" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
-				});
-				exec('echo "0" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/value', (error, stdout, stderr) => {
-				});
-			}
+			exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
+			});
 		}
-		
-		relaysStates[relayNumber] = state;
-		
-		return true;
-	} else if (SharedManager.deviceSettings.hardware.includes('Omega') == true) {
-		exec('fast-gpio set ' + relaySettings.relay_gpio_pin + ' ' + (state == true ? String(relaySettings.gpio_true_value) : String(relaySettings.gpio_false_value)), (error, stdout, stderr) => {
-		});
-		
-		relaysStates[relayNumber] = state;
-
-		return true;
 	} else {
-		return false;
+		if (relaySettings.gpio_false_value == true) {
+			exec('echo "in" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
+			});
+		} else {
+			exec('echo "out" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/direction', (error, stdout, stderr) => {
+			});
+			exec('echo "0" > /sys/class/gpio/gpio' + String(relaySettings.relay_gpio_pin) + '/value', (error, stdout, stderr) => {
+			});
+		}
 	}
+	
+	relaysStates[relayNumber] = state;
 };
 
 module.exports.readRelayFeedback = function(relayNumber, callback) {
 	const relaySettings = SharedManager.service.settings.relays[relayNumber];
 	
-	if (SharedManager.deviceSettings.hardware.includes('Raspberry') == true) {
-		exec('cat /sys/class/gpio/gpio' + String(relaySettings.feedback_gpio_pin) + '/value', (error, stdout, stderr) => {
-			if (stdout == '1') {
-				callback(true);
-			} else {
-				callback(false);
-			}
-		});
-	} else if (SharedManager.deviceSettings.hardware.includes('Omega') == true) {
-		exec('fast-gpio read ' + relaySettings.feedback_gpio_pin, (error, stdout, stderr) => {
-			if (stdout == '1') {
-				callback(true);
-			} else {
-				callback(false);
-			}
-		});
-		
-		return true;
-	} else {
-		return false;
-	}
+	exec('cat /sys/class/gpio/gpio' + String(relaySettings.feedback_gpio_pin) + '/value', (error, stdout, stderr) => {
+		if (stdout == '1') {
+			callback(true);
+		} else {
+			callback(false);
+		}
+	});
 };
 
 module.exports.relaysCurrentStates = function() {
