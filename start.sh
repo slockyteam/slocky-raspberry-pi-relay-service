@@ -1,3 +1,3 @@
 #!/bin/sh
 
-sudo forever start -c "npm start" ./
+sudo forever start -a -l /dev/null -c "npm start" ./
